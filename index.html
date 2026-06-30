@@ -1,0 +1,674 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Unreal Toplu PO Lokalizasyon</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f4f7f7;
+      --panel: #ffffff;
+      --ink: #18232a;
+      --muted: #62727d;
+      --line: #d7e0e4;
+      --accent: #0f766e;
+      --accent-strong: #0a5f59;
+      --soft: #edf4f4;
+      --ok: #16803f;
+      --warn: #a65f00;
+      --error: #b42318;
+      font-family: Inter, Segoe UI, Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--ink);
+    }
+
+    .shell {
+      width: min(1240px, calc(100vw - 32px));
+      margin: 0 auto;
+      padding: 28px 0 36px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 18px;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      margin: 0 0 6px;
+      font-size: clamp(27px, 4vw, 42px);
+      line-height: 1.05;
+      letter-spacing: 0;
+    }
+
+    .subtitle {
+      margin: 0;
+      max-width: 820px;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(310px, 410px) minmax(0, 1fr);
+      gap: 16px;
+      align-items: start;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 18px;
+      box-shadow: 0 10px 28px rgba(24, 38, 48, 0.06);
+    }
+
+    .section-title {
+      margin: 0 0 14px;
+      font-size: 17px;
+      line-height: 1.2;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 7px;
+      color: #2a3942;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    input,
+    select,
+    button {
+      font: inherit;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    select {
+      width: 100%;
+      min-height: 42px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #fff;
+      color: var(--ink);
+      padding: 9px 11px;
+      outline: none;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.13);
+    }
+
+    .field {
+      margin-bottom: 14px;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .switch {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 12px 0;
+      color: #2a3942;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .switch input {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--accent);
+    }
+
+    .buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      padding: 10px 14px;
+      cursor: pointer;
+      font-weight: 800;
+      transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+    }
+
+    button:active {
+      transform: translateY(1px);
+    }
+
+    button:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .primary {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .primary:hover {
+      background: var(--accent-strong);
+    }
+
+    .secondary {
+      background: var(--soft);
+      border-color: var(--line);
+      color: #21313a;
+    }
+
+    .secondary:hover {
+      background: #e3eded;
+    }
+
+    .provider-extra {
+      display: none;
+    }
+
+    .provider-extra.visible {
+      display: block;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .stat {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      background: #fbfcfc;
+      min-width: 0;
+    }
+
+    .stat b {
+      display: block;
+      font-size: 22px;
+      line-height: 1;
+      margin-bottom: 5px;
+    }
+
+    .stat span {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .status {
+      margin: 0 0 14px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    th,
+    td {
+      padding: 10px 11px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    th {
+      background: #edf4f4;
+      color: #34434a;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .path {
+      max-width: 470px;
+      word-break: break-word;
+      color: #2c3c44;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 12px;
+    }
+
+    .log {
+      height: 190px;
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 10px;
+      background: #101820;
+      color: #e7f1f0;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 12px;
+      line-height: 1.45;
+      white-space: pre-wrap;
+      margin-top: 14px;
+    }
+
+    .note {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+      margin: 8px 0 0;
+    }
+
+    .ok {
+      color: var(--ok);
+    }
+
+    .warn {
+      color: var(--warn);
+    }
+
+    .error {
+      color: var(--error);
+    }
+
+    @media (max-width: 940px) {
+      header,
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      header {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .row,
+      .stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <div>
+        <h1>Unreal Toplu PO Lokalizasyon</h1>
+        <p class="subtitle">UE projesinin veya Localization klasorunun yolunu ver; arac tum .archive ve .po dosyalarini bulur, klasor yapisina gore hedef dili anlar ve ceviriyi yerine yazar.</p>
+      </div>
+    </header>
+
+    <div class="grid">
+      <section class="panel" aria-label="Ayarlar">
+        <h2 class="section-title">Klasor ve Ayarlar</h2>
+
+        <div class="field">
+          <label for="rootPath">UE proje / Localization klasor yolu</label>
+          <input id="rootPath" type="text" placeholder="C:\Projeler\BenimOyunum\Content\Localization">
+          <p class="note">Proje kokunu de verebilirsin; arac alt klasorlerdeki .po dosyalarini bulur.</p>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label for="sourceLang">Ana dil</label>
+            <select id="sourceLang">
+              <option value="en" selected>English</option>
+              <option value="tr">Turkce</option>
+              <option value="ar">Arabic</option>
+              <option value="bg">Bulgarca</option>
+              <option value="cs">Czech</option>
+              <option value="da">Danish</option>
+              <option value="de">Deutsch</option>
+              <option value="el">Greek</option>
+              <option value="es">Espanol</option>
+              <option value="fi">Finnish</option>
+              <option value="fr">Francais</option>
+              <option value="hi">Hindi</option>
+              <option value="hu">Hungarian</option>
+              <option value="id">Indonesian</option>
+              <option value="it">Italiano</option>
+              <option value="ja">Japanese</option>
+              <option value="ko">Korean</option>
+              <option value="nl">Dutch</option>
+              <option value="no">Norwegian</option>
+              <option value="pl">Polish</option>
+              <option value="pt">Portugues</option>
+              <option value="ro">Romanian</option>
+              <option value="ru">Russian</option>
+              <option value="sv">Swedish</option>
+              <option value="th">Thai</option>
+              <option value="uk">Ukrainian</option>
+              <option value="vi">Vietnamese</option>
+              <option value="zh">Chinese</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="provider">Cevri servisi</label>
+            <select id="provider">
+              <option value="mymemory" selected>MyMemory ucretsiz</option>
+              <option value="libre">LibreTranslate adresi</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="provider-extra" id="libreFields">
+          <div class="field">
+            <label for="libreUrl">LibreTranslate URL</label>
+            <input id="libreUrl" type="text" value="https://libretranslate.com/translate">
+          </div>
+          <div class="field">
+            <label for="apiKey">API anahtari varsa</label>
+            <input id="apiKey" type="text" placeholder="Bos birakilabilir">
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label for="delayMs">Istek bekleme suresi</label>
+            <input id="delayMs" type="number" min="0" step="100" value="500">
+          </div>
+          <div class="field">
+            <label for="maxItems">Dosya basina en fazla</label>
+            <input id="maxItems" type="number" min="0" step="1" value="0">
+            <p class="note">0 yazarsan butun uygun satirlar islenir.</p>
+          </div>
+        </div>
+
+        <label class="switch">
+          <input id="overwrite" type="checkbox">
+          Dolu msgstr alanlarini da yeniden cevir
+        </label>
+
+        <label class="switch">
+          <input id="skipTagged" type="checkbox" checked>
+          Oyun metni gibi gorunmeyen teknik satirlari atla
+        </label>
+
+        <label class="switch">
+          <input id="backup" type="checkbox" checked>
+          Degisen dosyalar icin .bak yedegi al
+        </label>
+
+        <div class="buttons">
+          <button class="secondary" id="scanBtn" type="button">Klasoru Tara</button>
+          <button class="primary" id="translateBtn" type="button" disabled>Tum Dilleri Cevir ve Kaydet</button>
+        </div>
+      </section>
+
+      <section class="panel" aria-label="Sonuc">
+        <h2 class="section-title">Sonuc</h2>
+        <p class="status" id="statusText">Klasor yolu bekleniyor.</p>
+
+        <div class="stats">
+          <div class="stat"><b id="fileCount">0</b><span>Dosya</span></div>
+          <div class="stat"><b id="languageCount">0</b><span>Dil</span></div>
+          <div class="stat"><b id="entryCount">0</b><span>Kayit</span></div>
+          <div class="stat"><b id="todoCount">0</b><span>Cevrilecek</span></div>
+          <div class="stat"><b id="changedCount">0</b><span>Degisen</span></div>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Dosya</th>
+              <th>Dil</th>
+              <th>Kayit</th>
+              <th>Cevrilecek</th>
+              <th>Durum</th>
+            </tr>
+          </thead>
+          <tbody id="fileRows">
+            <tr><td colspan="5">Henuz tarama yapilmadi.</td></tr>
+          </tbody>
+        </table>
+
+        <div class="log" id="log" role="log" aria-live="polite"></div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const APP_ORIGIN = "http://127.0.0.1:8766";
+
+    if (location.protocol === "file:" || location.port !== "8766") {
+      location.replace(APP_ORIGIN + "/");
+    }
+
+    const el = {
+      rootPath: document.getElementById("rootPath"),
+      sourceLang: document.getElementById("sourceLang"),
+      provider: document.getElementById("provider"),
+      libreFields: document.getElementById("libreFields"),
+      libreUrl: document.getElementById("libreUrl"),
+      apiKey: document.getElementById("apiKey"),
+      delayMs: document.getElementById("delayMs"),
+      maxItems: document.getElementById("maxItems"),
+      overwrite: document.getElementById("overwrite"),
+      skipTagged: document.getElementById("skipTagged"),
+      backup: document.getElementById("backup"),
+      scanBtn: document.getElementById("scanBtn"),
+      translateBtn: document.getElementById("translateBtn"),
+      statusText: document.getElementById("statusText"),
+      fileCount: document.getElementById("fileCount"),
+      languageCount: document.getElementById("languageCount"),
+      entryCount: document.getElementById("entryCount"),
+      todoCount: document.getElementById("todoCount"),
+      changedCount: document.getElementById("changedCount"),
+      fileRows: document.getElementById("fileRows"),
+      log: document.getElementById("log")
+    };
+
+    let lastScan = null;
+
+    el.provider.addEventListener("change", () => {
+      el.libreFields.classList.toggle("visible", el.provider.value === "libre");
+    });
+    el.scanBtn.addEventListener("click", scanFolder);
+    el.translateBtn.addEventListener("click", translateFolder);
+    el.rootPath.addEventListener("input", () => {
+      el.translateBtn.disabled = true;
+      lastScan = null;
+    });
+
+    function payload() {
+      return {
+        root: el.rootPath.value.trim(),
+        sourceLang: el.sourceLang.value,
+        provider: el.provider.value,
+        libreUrl: el.libreUrl.value.trim(),
+        apiKey: el.apiKey.value.trim(),
+        delayMs: Number(el.delayMs.value) || 0,
+        maxItems: Number(el.maxItems.value) || 0,
+        overwrite: el.overwrite.checked,
+        skipTagged: el.skipTagged.checked,
+        backup: el.backup.checked
+      };
+    }
+
+    async function scanFolder() {
+      if (!el.rootPath.value.trim()) {
+        setStatus("Once UE klasor yolunu yaz.", "error");
+        return;
+      }
+
+      setBusy(true);
+      setStatus("Klasor taraniyor...");
+      writeLog("Tarama basladi.");
+
+      try {
+        const data = await postJson("/api/scan", payload());
+        lastScan = data;
+        renderScan(data);
+        el.translateBtn.disabled = data.totals.todo === 0;
+        setStatus(`${data.totals.files} dosya bulundu (${data.format || 'po'}). ${data.totals.todo} satir cevrilecek.`, data.totals.todo ? "ok" : "warn");
+        writeLog(`Tarama bitti: ${data.totals.files} dosya (${data.format || 'po'}), ${data.totals.languages} dil, ${data.totals.todo} cevrilecek satir.`);
+      } catch (error) {
+        setStatus(error.message, "error");
+        writeLog(error.message, "error");
+      } finally {
+        setBusy(false);
+      }
+    }
+
+    async function translateFolder() {
+      if (!lastScan) {
+        await scanFolder();
+        if (!lastScan) return;
+      }
+
+      setBusy(true);
+      el.translateBtn.disabled = true;
+      setStatus("Cevriler yapiliyor ve dosyalara yaziliyor...");
+      writeLog("Toplu ceviri basladi. Dosya sayisi ve ucretsiz servis limitine gore biraz surebilir.");
+
+      try {
+        const data = await postJson("/api/translate-folder", payload());
+        renderTranslate(data);
+        setStatus(`${data.totals.translated} satir cevrildi, ${data.totals.changedFiles} dosya guncellendi.`, data.totals.failed ? "warn" : "ok");
+        writeLog(`Bitti: ${data.totals.translated} basarili, ${data.totals.failed} hatali, ${data.totals.changedFiles} dosya degisti.`);
+      } catch (error) {
+        setStatus(error.message, "error");
+        writeLog(error.message, "error");
+      } finally {
+        setBusy(false);
+      }
+    }
+
+    async function postJson(url, body) {
+      let response;
+      try {
+        response = await fetch(APP_ORIGIN + url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body)
+        });
+      } catch {
+        throw new Error("Yerel program baglantisi yok. app.py calisiyor olmali ve sayfa http://127.0.0.1:8766/ adresinden acilmali.");
+      }
+      const data = await response.json();
+      if (!response.ok || data.error) {
+        throw new Error(data.error || `HTTP ${response.status}`);
+      }
+      return data;
+    }
+
+    function renderScan(data) {
+      el.fileCount.textContent = data.totals.files;
+      el.languageCount.textContent = data.totals.languages;
+      el.entryCount.textContent = data.totals.entries;
+      el.todoCount.textContent = data.totals.todo;
+      el.changedCount.textContent = "0";
+
+      if (!data.files.length) {
+        el.fileRows.innerHTML = '<tr><td colspan="5">Bu klasorde .archive veya .po dosyasi bulunamadi. Unreal Localization Dashboard icinden Gather ve Export yaptigina emin ol.</td></tr>';
+        return;
+      }
+
+      el.fileRows.innerHTML = data.files.map(file => `
+        <tr>
+          <td class="path">${escapeHtml(file.relative)}</td>
+          <td>${escapeHtml(file.languageName || file.language || "-")}</td>
+          <td>${file.entries}</td>
+          <td>${file.todo}</td>
+          <td>${file.todo ? '<span class="ok">Hazir</span>' : '<span class="warn">Atlanacak</span>'}</td>
+        </tr>
+      `).join("");
+    }
+
+    function renderTranslate(data) {
+      el.fileCount.textContent = data.totals.files;
+      el.languageCount.textContent = "-";
+      el.entryCount.textContent = data.totals.entries;
+      el.todoCount.textContent = data.totals.todo;
+      el.changedCount.textContent = data.totals.changedFiles;
+
+      el.fileRows.innerHTML = data.files.map(file => {
+        const status = file.failed
+          ? `<span class="warn">${file.translated} cevrildi, ${file.failed} hata</span>`
+          : file.changed
+            ? `<span class="ok">${file.translated} cevrildi</span>`
+            : `<span class="warn">Degisiklik yok</span>`;
+        if (file.errors && file.errors.length) {
+          for (const item of file.errors.slice(0, 3)) writeLog(`${file.path}: ${item}`, file.failed ? "error" : "warn");
+        }
+        return `
+          <tr>
+            <td class="path">${escapeHtml(file.path)}</td>
+            <td>${escapeHtml(file.language || "-")}</td>
+            <td>${file.entries}</td>
+            <td>${file.todo}</td>
+            <td>${status}</td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    function setBusy(isBusy) {
+      el.scanBtn.disabled = isBusy;
+      el.translateBtn.disabled = isBusy || !lastScan || lastScan.totals.todo === 0;
+      el.rootPath.disabled = isBusy;
+      el.provider.disabled = isBusy;
+    }
+
+    function setStatus(message, type) {
+      el.statusText.textContent = message;
+      el.statusText.className = "status";
+      if (type) el.statusText.classList.add(type);
+    }
+
+    function writeLog(message, type) {
+      const stamp = new Date().toLocaleTimeString("tr-TR");
+      const node = document.createElement("div");
+      node.textContent = `[${stamp}] ${message}`;
+      if (type) node.className = type;
+      el.log.appendChild(node);
+      el.log.scrollTop = el.log.scrollHeight;
+    }
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      }[char]));
+    }
+  </script>
+</body>
+</html>
