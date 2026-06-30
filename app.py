@@ -335,7 +335,7 @@ def scan_archive_files(root_path, source_lang, overwrite=False, skip_tagged=True
                 "path": str(path),
                 "relative": str(path.relative_to(root_path)),
                 "language": language,
-                "languageName": LANG_NAMES.get(language, language or "Bilinmiyor"),
+                "languageName": LANG_NAMES.get(language, language or "Unknown"),
                 "entries": len(entries),
                 "todo": todo,
                 "format": "archive",
@@ -369,7 +369,7 @@ def scan_po_files_only(root_path, overwrite=False, skip_tagged=True):
                 "path": str(path),
                 "relative": str(path.relative_to(root_path)),
                 "language": language,
-                "languageName": LANG_NAMES.get(language, language or "Bilinmiyor"),
+                "languageName": LANG_NAMES.get(language, language or "Unknown"),
                 "entries": len(entries),
                 "todo": todo,
                 "format": "po",
@@ -389,9 +389,9 @@ def scan_files(root, source_lang="en", overwrite=False, skip_tagged=True):
     """Scan for localization files. Tries .archive first, falls back to .po."""
     root_path = Path(root).expanduser().resolve()
     if not root_path.exists():
-        raise ValueError("Klasor bulunamadi.")
+        raise ValueError("Directory not found.")
     if not root_path.is_dir():
-        raise ValueError("Bir klasor yolu vermelisin.")
+        raise ValueError("You must provide a folder path.")
 
     # Try .archive first (UE native format)
     result = scan_archive_files(root_path, source_lang, overwrite, skip_tagged)
@@ -407,6 +407,9 @@ def scan_files(root, source_lang="en", overwrite=False, skip_tagged=True):
     return {"root": str(root_path), "files": [], "totals": {"files": 0, "entries": 0, "todo": 0, "languages": 0}, "format": "none"}
 
 
+GLOBAL_CACHE = {}
+
+
 def translate_mymemory(text, source_lang, target_lang):
     params = urllib.parse.urlencode({"q": text, "langpair": f"{source_lang}|{target_lang}"})
     request = urllib.request.Request(
@@ -417,7 +420,7 @@ def translate_mymemory(text, source_lang, target_lang):
         data = json.loads(response.read().decode("utf-8"))
     translated = data.get("responseData", {}).get("translatedText")
     if not translated:
-        raise RuntimeError("Bos cevap")
+        raise RuntimeError("Empty response")
     return restore_placeholders(text, html_unescape(translated))
 
 
@@ -442,7 +445,7 @@ def translate_libre(text, source_lang, target_lang, libre_url, api_key):
         data = json.loads(response.read().decode("utf-8"))
     translated = data.get("translatedText")
     if not translated:
-        raise RuntimeError("Bos cevap")
+        raise RuntimeError("Empty response")
     return restore_placeholders(text, translated)
 
 
@@ -508,12 +511,12 @@ def process_po_file(path, settings, cache, stamp):
     }
 
     if not language:
-        result["errors"].append("Dil algilanamadi.")
+        result["errors"].append("Language could not be detected.")
         return result
 
     if language == settings.get("sourceLang", "en"):
         result["skipped"] = len(entries)
-        result["errors"].append("Kaynak dil dosyasi atlandi.")
+        result["errors"].append("Source language file skipped.")
         return result
 
     candidates = [entry for entry in entries if should_translate(entry, overwrite, skip_tagged)]
@@ -575,18 +578,18 @@ def process_archive_file(path, settings, cache, stamp):
     }
 
     if not language:
-        result["errors"].append("Dil algilanamadi.")
+        result["errors"].append("Language could not be detected.")
         return result
 
     if language == source_lang:
-        result["errors"].append("Kaynak dil dosyasi atlandi.")
+        result["errors"].append("Source language file skipped.")
         return result
 
     try:
         archive_data = read_archive(path)
         entries = collect_archive_entries(archive_data)
     except Exception as exc:
-        result["errors"].append(f"Dosya okunamadi: {exc}")
+        result["errors"].append(f"File could not be read: {exc}")
         return result
 
     result["entries"] = len(entries)
@@ -641,7 +644,6 @@ def translate_folder(settings):
     )
     file_format = scan.get("format", "none")
     stamp = time.strftime("%Y%m%d-%H%M%S")
-    cache = {}
     results = []
     totals = {
         "files": len(scan["files"]),
@@ -655,9 +657,9 @@ def translate_folder(settings):
     for item in scan["files"]:
         path = Path(item["path"])
         if file_format == "archive":
-            result = process_archive_file(path, settings, cache, stamp)
+            result = process_archive_file(path, settings, GLOBAL_CACHE, stamp)
         else:
-            result = process_po_file(path, settings, cache, stamp)
+            result = process_po_file(path, settings, GLOBAL_CACHE, stamp)
         results.append(result)
         totals["entries"] += result["entries"]
         totals["todo"] += result["todo"]
@@ -691,6 +693,16 @@ class Handler(SimpleHTTPRequestHandler):
                 ))
             elif parsed.path == "/api/translate-folder":
                 self.send_json(translate_folder(payload))
+            elif parsed.path == "/api/translate-file":
+                path = Path(payload.get("path", ""))
+                file_format = payload.get("format", "po")
+                settings = payload.get("settings", {})
+                stamp = payload.get("stamp", "")
+                if file_format == "archive":
+                    res = process_archive_file(path, settings, GLOBAL_CACHE, stamp)
+                else:
+                    res = process_po_file(path, settings, GLOBAL_CACHE, stamp)
+                self.send_json(res)
             else:
                 self.send_error(404)
         except Exception as exc:
@@ -707,11 +719,11 @@ class Handler(SimpleHTTPRequestHandler):
 
 def main():
     server = ThreadingHTTPServer(("127.0.0.1", PORT), Handler)
-    print(f"UE lokalizasyon araci: http://127.0.0.1:{PORT}/")
+    print(f"Unreal Localization Tool running at: http://127.0.0.1:{PORT}/")
     try:
         server.serve_forever()
     except KeyboardInterrupt:
-        print("\nKapatildi.")
+        print("\nShutdown.")
 
 
 if __name__ == "__main__":

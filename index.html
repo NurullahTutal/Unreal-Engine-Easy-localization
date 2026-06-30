@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="tr">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Unreal Toplu PO Lokalizasyon</title>
+  <title>Unreal Engine Easy Localization</title>
   <style>
     :root {
       color-scheme: light;
@@ -74,6 +74,7 @@
       border-radius: 8px;
       padding: 18px;
       box-shadow: 0 10px 28px rgba(24, 38, 48, 0.06);
+      margin-bottom: 16px;
     }
 
     .section-title {
@@ -306,6 +307,71 @@
       color: var(--error);
     }
 
+    /* Progress Bar Styles */
+    .progress-container {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      margin-bottom: 14px;
+      box-shadow: 0 4px 12px rgba(24, 38, 48, 0.04);
+    }
+
+    .progress-bar-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: #2a3942;
+    }
+
+    .progress-bar-bg {
+      height: 10px;
+      background: var(--soft);
+      border-radius: 5px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent-strong));
+      width: 0%;
+      transition: width 0.2s ease-in-out;
+    }
+
+    /* User Guide Styles */
+    .guide-container {
+      margin-top: 24px;
+    }
+
+    .guide-title {
+      font-size: 20px;
+      font-weight: 800;
+      margin-bottom: 16px;
+      color: var(--ink);
+      border-bottom: 2px solid var(--line);
+      padding-bottom: 8px;
+    }
+
+    .guide-step {
+      margin-bottom: 16px;
+    }
+
+    .guide-step h4 {
+      margin: 0 0 6px 0;
+      font-size: 15px;
+      color: var(--accent-strong);
+    }
+
+    .guide-step p {
+      margin: 0;
+      font-size: 13px;
+      color: #4a5a64;
+      line-height: 1.5;
+    }
+
     @media (max-width: 940px) {
       header,
       .grid {
@@ -328,46 +394,46 @@
   <main class="shell">
     <header>
       <div>
-        <h1>Unreal Toplu PO Lokalizasyon</h1>
-        <p class="subtitle">UE projesinin veya Localization klasorunun yolunu ver; arac tum .archive ve .po dosyalarini bulur, klasor yapisina gore hedef dili anlar ve ceviriyi yerine yazar.</p>
+        <h1>Unreal Engine Easy Localization</h1>
+        <p class="subtitle">Provide your UE project's or target's Localization folder path. The tool will automatically detect all .archive and .po files, map the target languages from the folders, and apply batch translations.</p>
       </div>
     </header>
 
     <div class="grid">
-      <section class="panel" aria-label="Ayarlar">
-        <h2 class="section-title">Klasor ve Ayarlar</h2>
+      <section class="panel" aria-label="Settings">
+        <h2 class="section-title">Folder & Settings</h2>
 
         <div class="field">
-          <label for="rootPath">UE proje / Localization klasor yolu</label>
-          <input id="rootPath" type="text" placeholder="C:\Projeler\BenimOyunum\Content\Localization">
-          <p class="note">Proje kokunu de verebilirsin; arac alt klasorlerdeki .po dosyalarini bulur.</p>
+          <label for="rootPath">UE Project / Localization Path</label>
+          <input id="rootPath" type="text" placeholder="C:\Projects\MyGame\Content\Localization">
+          <p class="note">You can provide the project root or the direct Localization target folder.</p>
         </div>
 
         <div class="row">
           <div class="field">
-            <label for="sourceLang">Ana dil</label>
+            <label for="sourceLang">Source Language</label>
             <select id="sourceLang">
               <option value="en" selected>English</option>
-              <option value="tr">Turkce</option>
+              <option value="tr">Turkish</option>
               <option value="ar">Arabic</option>
-              <option value="bg">Bulgarca</option>
+              <option value="bg">Bulgarian</option>
               <option value="cs">Czech</option>
               <option value="da">Danish</option>
-              <option value="de">Deutsch</option>
+              <option value="de">German</option>
               <option value="el">Greek</option>
-              <option value="es">Espanol</option>
+              <option value="es">Spanish</option>
               <option value="fi">Finnish</option>
-              <option value="fr">Francais</option>
+              <option value="fr">French</option>
               <option value="hi">Hindi</option>
               <option value="hu">Hungarian</option>
               <option value="id">Indonesian</option>
-              <option value="it">Italiano</option>
+              <option value="it">Italian</option>
               <option value="ja">Japanese</option>
               <option value="ko">Korean</option>
               <option value="nl">Dutch</option>
               <option value="no">Norwegian</option>
               <option value="pl">Polish</option>
-              <option value="pt">Portugues</option>
+              <option value="pt">Portuguese</option>
               <option value="ro">Romanian</option>
               <option value="ru">Russian</option>
               <option value="sv">Swedish</option>
@@ -378,10 +444,10 @@
             </select>
           </div>
           <div class="field">
-            <label for="provider">Cevri servisi</label>
+            <label for="provider">Translation Service</label>
             <select id="provider">
-              <option value="mymemory" selected>MyMemory ucretsiz</option>
-              <option value="libre">LibreTranslate adresi</option>
+              <option value="mymemory" selected>MyMemory (Free)</option>
+              <option value="libre">LibreTranslate API</option>
             </select>
           </div>
         </div>
@@ -392,74 +458,117 @@
             <input id="libreUrl" type="text" value="https://libretranslate.com/translate">
           </div>
           <div class="field">
-            <label for="apiKey">API anahtari varsa</label>
-            <input id="apiKey" type="text" placeholder="Bos birakilabilir">
+            <label for="apiKey">API Key (Optional)</label>
+            <input id="apiKey" type="text" placeholder="Leave blank if not needed">
           </div>
         </div>
 
         <div class="row">
           <div class="field">
-            <label for="delayMs">Istek bekleme suresi</label>
+            <label for="delayMs">Delay per request (ms)</label>
             <input id="delayMs" type="number" min="0" step="100" value="500">
           </div>
           <div class="field">
-            <label for="maxItems">Dosya basina en fazla</label>
+            <label for="maxItems">Max rows per file</label>
             <input id="maxItems" type="number" min="0" step="1" value="0">
-            <p class="note">0 yazarsan butun uygun satirlar islenir.</p>
+            <p class="note">0 translates all rows.</p>
           </div>
         </div>
 
         <label class="switch">
           <input id="overwrite" type="checkbox">
-          Dolu msgstr alanlarini da yeniden cevir
+          Overwrite existing translations
         </label>
 
         <label class="switch">
           <input id="skipTagged" type="checkbox" checked>
-          Oyun metni gibi gorunmeyen teknik satirlari atla
+          Skip non-game technical text
         </label>
 
         <label class="switch">
           <input id="backup" type="checkbox" checked>
-          Degisen dosyalar icin .bak yedegi al
+          Create backup copies (.bak-*)
         </label>
 
         <div class="buttons">
-          <button class="secondary" id="scanBtn" type="button">Klasoru Tara</button>
-          <button class="primary" id="translateBtn" type="button" disabled>Tum Dilleri Cevir ve Kaydet</button>
+          <button class="secondary" id="scanBtn" type="button">Scan Folder</button>
+          <button class="primary" id="translateBtn" type="button" disabled>Translate & Save All</button>
         </div>
       </section>
 
-      <section class="panel" aria-label="Sonuc">
-        <h2 class="section-title">Sonuc</h2>
-        <p class="status" id="statusText">Klasor yolu bekleniyor.</p>
-
-        <div class="stats">
-          <div class="stat"><b id="fileCount">0</b><span>Dosya</span></div>
-          <div class="stat"><b id="languageCount">0</b><span>Dil</span></div>
-          <div class="stat"><b id="entryCount">0</b><span>Kayit</span></div>
-          <div class="stat"><b id="todoCount">0</b><span>Cevrilecek</span></div>
-          <div class="stat"><b id="changedCount">0</b><span>Degisen</span></div>
+      <div>
+        <!-- Real-time Progress Bar -->
+        <div class="progress-container" id="progressContainer" style="display: none;">
+          <div class="progress-bar-label">
+            <span id="progressFile">Preparing...</span>
+            <span id="progressPercent">0%</span>
+          </div>
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="progressBarFill"></div>
+          </div>
         </div>
 
-        <table>
-          <thead>
-            <tr>
-              <th>Dosya</th>
-              <th>Dil</th>
-              <th>Kayit</th>
-              <th>Cevrilecek</th>
-              <th>Durum</th>
-            </tr>
-          </thead>
-          <tbody id="fileRows">
-            <tr><td colspan="5">Henuz tarama yapilmadi.</td></tr>
-          </tbody>
-        </table>
+        <section class="panel" aria-label="Results">
+          <h2 class="section-title">Results</h2>
+          <p class="status" id="statusText">Waiting for folder scan.</p>
 
-        <div class="log" id="log" role="log" aria-live="polite"></div>
-      </section>
+          <div class="stats">
+            <div class="stat"><b id="fileCount">0</b><span>Files</span></div>
+            <div class="stat"><b id="languageCount">0</b><span>Languages</span></div>
+            <div class="stat"><b id="entryCount">0</b><span>Total Rows</span></div>
+            <div class="stat"><b id="todoCount">0</b><span>To Translate</span></div>
+            <div class="stat"><b id="changedCount">0</b><span>Modified</span></div>
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th>File</th>
+                <th>Language</th>
+                <th>Rows</th>
+                <th>To Translate</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="fileRows">
+              <tr><td colspan="5">No scan performed yet.</td></tr>
+            </tbody>
+          </table>
+
+          <div class="log" id="log" role="log" aria-live="polite"></div>
+        </section>
+      </div>
     </div>
+
+    <!-- Detailed User Guide -->
+    <section class="panel guide-container" aria-label="User Guide">
+      <h2 class="guide-title">Detailed User Guide / How to Use</h2>
+      
+      <div class="guide-step">
+        <h4>1. Preparation in Unreal Engine</h4>
+        <p>Before using this tool, make sure you have generated the translation directories. In the Unreal Editor, open the <b>Localization Dashboard</b>, select your target (usually 'Game'), click <b>Gather Text</b> to capture texts from assets, and then add your target cultures. Finally, click <b>Export Text</b> if you want .po files, or just run the pipeline so that .archive files are generated under <code>Content/Localization/Game/{CultureCode}/</code>.</p>
+      </div>
+
+      <div class="guide-step">
+        <h4>2. Scanning and Target Path Configuration</h4>
+        <p>Copy the path of your <code>Content/Localization</code> directory (or a specific target directory like <code>Content/Localization/Game</code>) and paste it into the <b>UE Project / Localization Path</b> input field. Click <b>Scan Folder</b>. The tool will scan all subdirectories, detect the format (.archive or .po), map the corresponding languages, and show you a list of files ready for translation.</p>
+      </div>
+
+      <div class="guide-step">
+        <h4>3. Adjusting Settings</h4>
+        <p>Choose your <b>Source Language</b> (the language you wrote your game in, usually English). You can adjust the <b>Delay</b> (recommended at least 500ms for MyMemory API to avoid temporary IP blocks) and choose whether you want to overwrite existing translated texts or create backup copies of your files before modification.</p>
+      </div>
+
+      <div class="guide-step">
+        <h4>4. Running Translation and Progress Tracking</h4>
+        <p>Click <b>Translate & Save All</b>. The progress bar will appear at the top, showing which file is currently being processed and the overall completion percentage. The logs at the bottom will display real-time translation activities and any API errors.</p>
+      </div>
+
+      <div class="guide-step">
+        <h4>5. Finalizing in Unreal Engine</h4>
+        <p>Once translation is complete, go back to the Unreal Editor's <b>Localization Dashboard</b>. Click <b>Import Text</b> (if you translated .po files) and then click <b>Compile Text</b>. Compiling is mandatory for Unreal Engine to generate the binary <code>.locres</code> files, which are the actual files loaded by the engine during runtime to display your translated texts.</p>
+      </div>
+    </section>
   </main>
 
   <script>
@@ -490,7 +599,11 @@
       todoCount: document.getElementById("todoCount"),
       changedCount: document.getElementById("changedCount"),
       fileRows: document.getElementById("fileRows"),
-      log: document.getElementById("log")
+      log: document.getElementById("log"),
+      progressContainer: document.getElementById("progressContainer"),
+      progressBarFill: document.getElementById("progressBarFill"),
+      progressPercent: document.getElementById("progressPercent"),
+      progressFile: document.getElementById("progressFile")
     };
 
     let lastScan = null;
@@ -503,6 +616,7 @@
     el.rootPath.addEventListener("input", () => {
       el.translateBtn.disabled = true;
       lastScan = null;
+      el.progressContainer.style.display = "none";
     });
 
     function payload() {
@@ -522,21 +636,22 @@
 
     async function scanFolder() {
       if (!el.rootPath.value.trim()) {
-        setStatus("Once UE klasor yolunu yaz.", "error");
+        setStatus("Please specify a valid folder path first.", "error");
         return;
       }
 
       setBusy(true);
-      setStatus("Klasor taraniyor...");
-      writeLog("Tarama basladi.");
+      el.progressContainer.style.display = "none";
+      setStatus("Scanning folder...");
+      writeLog("Scan started.");
 
       try {
         const data = await postJson("/api/scan", payload());
         lastScan = data;
         renderScan(data);
         el.translateBtn.disabled = data.totals.todo === 0;
-        setStatus(`${data.totals.files} dosya bulundu (${data.format || 'po'}). ${data.totals.todo} satir cevrilecek.`, data.totals.todo ? "ok" : "warn");
-        writeLog(`Tarama bitti: ${data.totals.files} dosya (${data.format || 'po'}), ${data.totals.languages} dil, ${data.totals.todo} cevrilecek satir.`);
+        setStatus(`${data.totals.files} files found (${data.format || 'po'}). ${data.totals.todo} rows to translate.`, data.totals.todo ? "ok" : "warn");
+        writeLog(`Scan complete: ${data.totals.files} files (${data.format || 'po'}), ${data.totals.languages} languages, ${data.totals.todo} rows to translate.`);
       } catch (error) {
         setStatus(error.message, "error");
         writeLog(error.message, "error");
@@ -546,27 +661,104 @@
     }
 
     async function translateFolder() {
-      if (!lastScan) {
+      if (!lastScan || !lastScan.files.length) {
         await scanFolder();
-        if (!lastScan) return;
+        if (!lastScan || !lastScan.files.length) return;
+      }
+
+      const filesToTranslate = lastScan.files.filter(f => f.todo > 0);
+      if (filesToTranslate.length === 0) {
+        setStatus("All files are already translated.", "warn");
+        return;
       }
 
       setBusy(true);
       el.translateBtn.disabled = true;
-      setStatus("Cevriler yapiliyor ve dosyalara yaziliyor...");
-      writeLog("Toplu ceviri basladi. Dosya sayisi ve ucretsiz servis limitine gore biraz surebilir.");
+      el.progressContainer.style.display = "block";
+      el.progressBarFill.style.width = "0%";
+      el.progressPercent.textContent = "0%";
+      
+      setStatus("Translating files...");
+      writeLog("Batch translation initiated. Process depends on API limits and delay times.");
 
-      try {
-        const data = await postJson("/api/translate-folder", payload());
-        renderTranslate(data);
-        setStatus(`${data.totals.translated} satir cevrildi, ${data.totals.changedFiles} dosya guncellendi.`, data.totals.failed ? "warn" : "ok");
-        writeLog(`Bitti: ${data.totals.translated} basarili, ${data.totals.failed} hatali, ${data.totals.changedFiles} dosya degisti.`);
-      } catch (error) {
-        setStatus(error.message, "error");
-        writeLog(error.message, "error");
-      } finally {
-        setBusy(false);
+      const stamp = new Date().toISOString().replace(/[-:T]/g, "").slice(0, 15);
+      let completed = 0;
+      let totalTranslated = 0;
+      let totalFailed = 0;
+      let changedFiles = 0;
+      const results = [];
+
+      for (const file of lastScan.files) {
+        // If file has nothing to translate, skip it
+        if (file.todo === 0) {
+          results.push({
+            path: file.path,
+            language: file.language,
+            entries: file.entries,
+            todo: 0,
+            translated: 0,
+            failed: 0,
+            changed: false,
+            backup: "",
+            errors: []
+          });
+          continue;
+        }
+
+        el.progressFile.textContent = `Translating: ${file.relative}`;
+        writeLog(`Translating: ${file.relative}...`);
+
+        try {
+          const res = await postJson("/api/translate-file", {
+            path: file.path,
+            format: file.format,
+            settings: payload(),
+            stamp: stamp
+          });
+
+          results.push(res);
+          totalTranslated += res.translated;
+          totalFailed += res.failed;
+          if (res.changed) changedFiles++;
+          writeLog(`Done: ${file.relative} (${res.translated} translated, ${res.failed} failed)`);
+        } catch (error) {
+          writeLog(`Error in ${file.relative}: ${error.message}`, "error");
+          results.push({
+            path: file.path,
+            language: file.language,
+            entries: file.entries,
+            todo: file.todo,
+            translated: 0,
+            failed: file.todo,
+            changed: false,
+            backup: "",
+            errors: [error.message]
+          });
+          totalFailed += file.todo;
+        }
+
+        completed++;
+        const percent = Math.round((completed / filesToTranslate.length) * 100);
+        el.progressBarFill.style.width = `${percent}%`;
+        el.progressPercent.textContent = `${percent}%`;
       }
+
+      // Re-render target file rows with translated status
+      renderTranslate({
+        totals: {
+          files: lastScan.files.length,
+          changedFiles: changedFiles,
+          entries: lastScan.totals.entries,
+          todo: lastScan.totals.todo,
+          translated: totalTranslated,
+          failed: totalFailed
+        },
+        files: results
+      });
+
+      setStatus(`Completed: ${totalTranslated} rows translated, ${changedFiles} files updated.`, totalFailed ? "warn" : "ok");
+      el.progressFile.textContent = "Translation finished.";
+      setBusy(false);
     }
 
     async function postJson(url, body) {
@@ -578,11 +770,11 @@
           body: JSON.stringify(body)
         });
       } catch {
-        throw new Error("Yerel program baglantisi yok. app.py calisiyor olmali ve sayfa http://127.0.0.1:8766/ adresinden acilmali.");
+        throw new Error("Connection failed. Make sure app.py is running and you loaded this page via http://127.0.0.1:8766/.");
       }
       const data = await response.json();
       if (!response.ok || data.error) {
-        throw new Error(data.error || `HTTP ${response.status}`);
+        throw new Error(data.error || `HTTP Error ${response.status}`);
       }
       return data;
     }
@@ -595,7 +787,7 @@
       el.changedCount.textContent = "0";
 
       if (!data.files.length) {
-        el.fileRows.innerHTML = '<tr><td colspan="5">Bu klasorde .archive veya .po dosyasi bulunamadi. Unreal Localization Dashboard icinden Gather ve Export yaptigina emin ol.</td></tr>';
+        el.fileRows.innerHTML = '<tr><td colspan="5">No .archive or .po files found in this folder. Make sure you ran "Gather Text" and added cultures in the UE Localization Dashboard.</td></tr>';
         return;
       }
 
@@ -605,7 +797,7 @@
           <td>${escapeHtml(file.languageName || file.language || "-")}</td>
           <td>${file.entries}</td>
           <td>${file.todo}</td>
-          <td>${file.todo ? '<span class="ok">Hazir</span>' : '<span class="warn">Atlanacak</span>'}</td>
+          <td>${file.todo ? '<span class="ok">Ready</span>' : '<span class="warn">Skipped</span>'}</td>
         </tr>
       `).join("");
     }
@@ -619,10 +811,10 @@
 
       el.fileRows.innerHTML = data.files.map(file => {
         const status = file.failed
-          ? `<span class="warn">${file.translated} cevrildi, ${file.failed} hata</span>`
+          ? `<span class="warn">${file.translated} translated, ${file.failed} failed</span>`
           : file.changed
-            ? `<span class="ok">${file.translated} cevrildi</span>`
-            : `<span class="warn">Degisiklik yok</span>`;
+            ? `<span class="ok">${file.translated} translated</span>`
+            : `<span class="warn">No changes</span>`;
         if (file.errors && file.errors.length) {
           for (const item of file.errors.slice(0, 3)) writeLog(`${file.path}: ${item}`, file.failed ? "error" : "warn");
         }
@@ -652,7 +844,7 @@
     }
 
     function writeLog(message, type) {
-      const stamp = new Date().toLocaleTimeString("tr-TR");
+      const stamp = new Date().toLocaleTimeString();
       const node = document.createElement("div");
       node.textContent = `[${stamp}] ${message}`;
       if (type) node.className = type;
